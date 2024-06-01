@@ -36,13 +36,13 @@ class FbrefLeagueSeasonDetailsScraper(FbrefScraper):
         super().__init__()
     
     # Main Functionality Methods
-    def scrape_clean_data(self, lg_id, season_id=None):
+    def scrape_clean_data(self, league_id, season_id=None):
         """
         Scrapes and cleans meta-data for a specific league id and season id.
 
         Parameters
         ----------
-        lg_id : int
+        league_id : int
             Football reference league id.
         season_id : str, optional
             Football reference season id. If not provided, defaults to None.
@@ -53,12 +53,12 @@ class FbrefLeagueSeasonDetailsScraper(FbrefScraper):
             A dictionary containing the cleaned meta-data for a league-season for the specified league id and season id.
         """
         # Scrape raw league-season-details data
-        ls_details_data_dict = self.scrape_league_season_details_data(lg_id, season_id=season_id)
+        ls_details_data_dict = self.scrape_league_season_details_data(league_id, season_id=season_id)
         # Clean league-season-details data
-        ls_details_data_dict_clean = self.clean_data(ls_details_data_dict, lg_id, season_id=season_id)
+        ls_details_data_dict_clean = self.clean_data(ls_details_data_dict, league_id, season_id=season_id)
         return ls_details_data_dict_clean
     
-    def clean_data(self, ls_details_data_dict, lg_id, season_id=None):
+    def clean_data(self, ls_details_data_dict, league_id, season_id=None):
         """
         Cleans raw league-season-details data scraped by the scrape_league_season_details_data method.
 
@@ -66,7 +66,7 @@ class FbrefLeagueSeasonDetailsScraper(FbrefScraper):
         ----------
         ls_details_data_dict : dict
             Dictionary containing raw data fetched by the scrape_league_season_details_data method.
-        lg_id : int
+        league_id : int
             Football reference league id.
         season_id : str, optional
             Football reference season id. If not provided, defaults to None.
@@ -81,10 +81,10 @@ class FbrefLeagueSeasonDetailsScraper(FbrefScraper):
         This method calls sub-class specific cleaning method, clean_league_season_details
         """
         # Call class-specified cleaning method
-        ls_details_data_dict_clean = self.clean_league_season_details(ls_details_data_dict, lg_id, season_id)
+        ls_details_data_dict_clean = self.clean_league_season_details(ls_details_data_dict, league_id, season_id)
         return ls_details_data_dict_clean
 
-    def scrape_league_season_details_data(self, lg_id, season_id=None):
+    def scrape_league_season_details_data(self, league_id, season_id=None):
         """
         Scrapes meta data for a specific league id and season id
 
@@ -103,9 +103,9 @@ class FbrefLeagueSeasonDetailsScraper(FbrefScraper):
         """
         # specify url based on parameters passed
         if season_id == None:
-            url = f"https://fbref.com/en/comps/{str(lg_id)}/schedule/"
+            url = f"https://fbref.com/en/comps/{str(league_id)}/schedule/"
         else:
-            url = f"https://fbref.com/en/comps/{str(lg_id)}/{season_id}/schedule/"
+            url = f"https://fbref.com/en/comps/{str(league_id)}/{season_id}/schedule/"
         # get data
         soup = self.scrape_data_requests(url)
         all_tables = self.get_all_tables(soup)
@@ -114,7 +114,7 @@ class FbrefLeagueSeasonDetailsScraper(FbrefScraper):
         return ls_details_data_dict
     
     # Helper Methods
-    def clean_league_season_details(self, ls_details_data_dict, lg_id, season_id=None):
+    def clean_league_season_details(self, ls_details_data_dict, league_id, season_id=None):
         """
         Cleans raw league-season-details data scraped by the scrape_league_season_details_data method.
 
@@ -122,7 +122,7 @@ class FbrefLeagueSeasonDetailsScraper(FbrefScraper):
         ----------
         ls_details_data_dict : dict
             Dictionary containing raw data fetched by the scrape_league_season_details_data method.
-        lg_id : int
+        league_id : int
             Football reference league id.
         season_id : str, optional
             Football reference season id. If not provided, defaults to None.
@@ -135,7 +135,7 @@ class FbrefLeagueSeasonDetailsScraper(FbrefScraper):
         # Create ls details data dict
         ls_details_data_dict_clean = {}
         ls_details_data_dict_clean['data'] = {}
-        ls_details_data_dict_clean['data']['lg_id'] = int(lg_id)
+        ls_details_data_dict_clean['data']['lg_id'] = int(league_id)
         if season_id == None:
             ls_details_data_dict_clean['data']['season_id'] = 'most_recent_season'
         else:
@@ -144,7 +144,7 @@ class FbrefLeagueSeasonDetailsScraper(FbrefScraper):
         ls_details_data_dict_clean['data']['league_start'] = min(ls_details_data_dict['date'])
         ls_details_data_dict_clean['data']['league_end'] = max(ls_details_data_dict['date'])
         # League_type and adv stats
-        has_adv_stats, league_type = self.get_league_type_adv(lg_id)
+        has_adv_stats, league_type = self.get_league_type_adv(league_id)
         ls_details_data_dict_clean['data']['league_type'] = league_type
         # Adv stats
         ls_details_data_dict_clean['data']['has_adv_stats'] = has_adv_stats

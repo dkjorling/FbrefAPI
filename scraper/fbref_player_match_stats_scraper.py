@@ -79,7 +79,7 @@ class FbrefPlayerMatchStatsScraper(FbrefStatsScraper):
             A dictionary containing the cleaned player-match statistical data for a specified team, league and season
         """
         # Scrape player-match data
-        player_match_stats_dict = self.scrape_all_player_match_stats(player_id, season_id, league_id)
+        player_match_stats_dict = self.scrape_all_player_match_stats(player_id, league_id, season_id)
         # Clean player0-match data
         player_match_stats_dict_clean = self.clean_stats(player_match_stats_dict)
         return player_match_stats_dict_clean
@@ -106,7 +106,7 @@ class FbrefPlayerMatchStatsScraper(FbrefStatsScraper):
         player_match_stats_dict_clean = self.clean_player_match_stats(player_match_stats_dict)
         return player_match_stats_dict_clean
     
-    def scrape_all_player_match_stats(self, player_id, season_id, league_id):
+    def scrape_all_player_match_stats(self, player_id, league_id, season_id):
         """
         Scrapes match-level player statistical data for a specified team, league and season.
 
@@ -142,7 +142,7 @@ class FbrefPlayerMatchStatsScraper(FbrefStatsScraper):
         all_stats_dict = {}
         for stat_id in stat_ids:
             print(stat_id)
-            stat_dict = self.scrape_player_match_stats(player_id, season_id, league_id, stat_id)
+            stat_dict = self.scrape_player_match_stats(player_id, league_id, season_id, stat_id)
             all_stats_dict[stat_id] = stat_dict
             time.sleep(3) # Sleep for three seconds between each scrape for football reference scraping rules
         return all_stats_dict

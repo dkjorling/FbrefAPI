@@ -20,7 +20,12 @@ class Countries(Resource):
 
     If no parameters are passed, data for all countries is returned.
 
-    If a country code is passed then data for only that apsecific country is returned.
+    If a country name is passed then data for only that specific country is returned.
+
+    Query Parameters
+    ----------------
+    country - str, optional
+        Name of country data to retrieve
 
     Notes
     -------
@@ -64,6 +69,11 @@ class Leagues(Resource):
     3) international_competitions - club-level competitions occuring between teams in specified coutnry and teams from other countries
     4) national_team_competitions - national team-level competitions where specified country's national team participated in
 
+    Query Parameters
+    ----------------
+    country_code : str
+        Three-letter code used by football reference to identify specific country
+
     Notes
     -------
     Meta-data, when available, includes:
@@ -89,6 +99,11 @@ class LeagueSeasons(Resource):
     """
     Endpoint to retrieve meta data for all season ids tracked by football reference, given a football reference league id.
 
+    Query Parameters
+    ----------------
+    league_id : int
+        Integer representing a league's football reference id
+
     Notes
     -------
     Meta-data, when available, includes:
@@ -112,6 +127,13 @@ class LeagueSeasons(Resource):
 class LeagueSeasonDetails(Resource):
     """
     Endpoint to retrieve meta-data for a specific league id and season id.
+
+    Query Parameters
+    ----------------
+    league_id : int
+        Football reference league id.
+    season_id : str, optional
+        Football reference season id. If not provided, defaults to None.
 
     Notes
     -------
@@ -145,6 +167,14 @@ class LeagueStandings(Resource):
 
     Standings data varies based on both league type (league or cup) and whether or not the league has advanced stats available on football reference.
 
+    Query Parameters
+    ----------------
+    league_id : int
+        Integer representing a league's football reference id
+    season_id : str, optional
+        Football reference season id. If not provided, defaults to None.
+    
+    
     Notes
     -------
     ** If season id is not provided, data is scraped for most recent season id for the specified league id **
@@ -189,6 +219,13 @@ class Teams(Resource):
     
     2) team_schedule
         Contains meta-data for all matches played by specified team and season
+    
+    Query Parameters
+    ----------------
+    team_id : str
+        8-character string representing a teams's football reference id
+    season_id : str, optional
+        Football reference season id. If not provided, defaults to None.
 
     Notes
     -------   
@@ -234,6 +271,11 @@ class Players(Resource):
     """
     Endpoint to retrieve football reference player data for a given player id
 
+    Query Parameters
+    ----------------
+    player_id : str
+        8-character string representing a player's football reference id
+
     Notes
     -------   
     Player meta-data, when available includes:
@@ -269,6 +311,15 @@ class Matches(Resource):
     1) Team match data - When a team id is passed, this signals to the class to retrieve match meta-data for a specific team
 
     2) League match data - When a team id is not passed but a league id is, this indicates to the class to retrieve match meta-data for a specific league
+
+    Query Parameters
+    ----------------
+    team_id : str, optional
+        8-character string representing a teams's football reference id. If not provided, defaults to None.
+    league_id : int, optional
+        Integer representing a player's football reference id. If not provided, defaults to None.
+    season_id : str, optional
+        Football reference season id. If not provided, defaults to None.
 
     Notes
     -------   
@@ -326,6 +377,13 @@ class TeamSeasonStats(Resource):
 
     Statistics are aggregate, average, or per 90 statistics over the course of a single season.
 
+    Query Parameters
+    ----------------
+    league_id : int
+        Integer representing a league's football reference id. 
+    season_id : str, optional
+        Football reference season id. If not provided, defaults to None.
+
     Notes
     -------   
     Advanced Statistical Categories:
@@ -369,6 +427,15 @@ class TeamSeasonStats(Resource):
 class TeamMatchStats(Resource):
     """
     Endpoint to retrieve match-level team statistical data for a specified team, league and season.
+
+    Query Parameters
+    ----------------
+    team_id : str
+        8-character string representing football reference team id
+    league_id : int
+        Integer representing a league's football reference id. 
+    season_id : str
+        Football reference season id
 
     Notes
     -------   
@@ -426,6 +493,16 @@ class PlayerSeasonStats(Resource):
 
     Statistics are aggregate, average, or per 90 statistics over the course of a single season.
 
+    Query Parameters
+    ----------------
+    team_id : str
+        8-character string representing football reference team id
+    league_id : int
+        Integer representing a league's football reference id. If not provided, defaults to None
+    season_id : str, optional
+        Football reference season id. If not provided, defaults to None.
+
+
     Notes
     -------   
     Advanced Player Statistical Categories:
@@ -445,7 +522,7 @@ class PlayerSeasonStats(Resource):
     1) keepers - general goalkeeping statistics
     2) keepersadv - advanced goalkeeping statistics
 
-    Non-Advanced Statistical Categories:
+    Non-Advanced Player Statistical Categories:
 
     1) stats
     2) keepers
@@ -453,7 +530,7 @@ class PlayerSeasonStats(Resource):
     4) playingtime
     5) misc
 
-    Advanced Keeper Statistical Categories:
+    Non-Advanced Keeper Statistical Categories:
 
     1) keepers
 
@@ -487,6 +564,15 @@ class PlayerSeasonStats(Resource):
 class PlayerMatchStats(Resource):
     """
     Endpoint to retrieve match-level player statistical data for a specified player, league and season.
+
+    Query Parameters
+    ----------------
+    player_id : str
+        8-character string representing football reference player id
+    league_id : int
+        Integer representing a league's football reference id.
+    season_id : str, optional
+        Football reference season id.
 
     Notes
     -------   
@@ -546,6 +632,11 @@ class AllPlayersMatchStats(Resource):
     """
     Endpoint to retrieve match-level player statistical data for both teams for a specified match id
 
+    Query Parameters
+    ----------------
+    match_id : str
+            8-character string representing football reference match id
+    
     Notes
     -------   
     This class provides both meta-data related to each player, and match-level player statistics covering various statistical categories.

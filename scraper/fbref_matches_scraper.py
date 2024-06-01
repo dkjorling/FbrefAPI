@@ -417,7 +417,7 @@ class FbrefMatchesScraper(FbrefScraper):
                 else:
                     url = f"https://fbref.com/en/squads/{team_id}/{season_string}matchlogs/schedule/"
             elif (team_id == None) & (league_id != None):
-                url = f"https://fbref.com/en/comps/{league_id}/{season_string}schedule"
+                url = f"https://fbref.com/en/comps/{league_id}/{season_string}schedule/"
             return url
         except:
             raise ValueError("Invalid combination of parameters! See class documentation for details.")

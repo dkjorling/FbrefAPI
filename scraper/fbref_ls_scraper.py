@@ -37,7 +37,7 @@ class FbrefLeagueSeasonsScraper(FbrefScraper):
 
         Parameters
         ----------
-        lg_id : int
+        league_id : int
             Integer representing a league's football reference id
         
         Returns

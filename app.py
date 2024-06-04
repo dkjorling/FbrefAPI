@@ -1,20 +1,79 @@
-from flask import Flask, request
+import secrets
+import boto3
+from botocore.exceptions import ClientError
+from flask import Flask, request, abort, send_from_directory
 from flask import request
 from flask_restful import Resource, Api
+from functools import wraps
 import scraper
 
 app = Flask(__name__)
-app.json.sort_keys = False # disable json sorting
-# wrap app in flask Api module
+# Disable json sorting
+app.json.sort_keys = False 
+# Wrap app in flask Api module
 api = Api(app)
 # allow api to return non-ascii
 api.app.config['RESTFUL_JSON'] = {
     'ensure_ascii': False
 }
+# Set up connection to DynamoDB
+dynamodb = boto3.resource('dynamodb', region_name='us-west-1')
+table = dynamodb.Table('FBRefAPIKeys')
 
 
-# define API endpoints
-class Countries(Resource):
+# Define functions related to API Key
+def generate_api_key():
+    """
+    Generates new api key
+    """
+    return secrets.token_urlsafe(32)
+
+def create_api_key():
+    """
+    Create API key and load to database
+    """
+    new_key = generate_api_key()
+    try:
+        table.put_item(
+            Item={
+                'api_key': new_key
+            }
+        )
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+    else:
+        return new_key
+
+def require_api_key(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        api_key = request.headers.get('X-API-Key')
+        if not api_key:
+            abort(401, 'Unauthorized')
+        try:
+            response = table.get_item(
+                Key={
+                    'apiKey': api_key
+                }
+            )
+        except ClientError as e:
+            print(e.response['Error']['Message'])
+            abort(500, 'Internal Server Error')
+        else:
+            if 'Item' not in response:
+                abort(401, 'Unauthorized')
+        return func(*args, **kwargs)
+    return wrapper
+
+# Create class that requires API Key and use as base class for all endpoints
+class AuthenticatedResource(Resource):
+    method_decorators = [require_api_key]
+
+    def dispatch_request(self, *args, **kwargs):
+        return super().dispatch_request(*args, **kwargs)
+
+# Define API endpoints
+class Countries(AuthenticatedResource):
     """
     Endpoint to retrieve meta-data for all countries that have either domestic or international football teams that are tracked by football reference.
 
@@ -56,7 +115,7 @@ class Countries(Resource):
                 pass
         return country_data_dict_clean
 
-class Leagues(Resource):
+class Leagues(AuthenticatedResource):
     """
     Endpoint to retrieve meta-data for all unique leagues associated with a specified country.
 
@@ -95,7 +154,7 @@ class Leagues(Resource):
         leagues_dict_clean = leagues_scraper.scrape_clean_data(country_code)
         return leagues_dict_clean
     
-class LeagueSeasons(Resource):
+class LeagueSeasons(AuthenticatedResource):
     """
     Endpoint to retrieve meta data for all season ids tracked by football reference, given a football reference league id.
 
@@ -124,7 +183,7 @@ class LeagueSeasons(Resource):
         
         return ls_data_dict_clean
 
-class LeagueSeasonDetails(Resource):
+class LeagueSeasonDetails(AuthenticatedResource):
     """
     Endpoint to retrieve meta-data for a specific league id and season id.
 
@@ -159,7 +218,7 @@ class LeagueSeasonDetails(Resource):
         
         return ls_details_data_dict_clean
 
-class LeagueStandings(Resource):
+class LeagueStandings(AuthenticatedResource):
     """
     Endpoint to retrieve all standings tables for a given league and season id.
     
@@ -267,7 +326,7 @@ class Teams(Resource):
         team_data_dict_clean = team_scraper.scrape_clean_data(team_id=team_id, season_id=season_id)
         return team_data_dict_clean
 
-class Players(Resource):
+class Players(AuthenticatedResource):
     """
     Endpoint to retrieve football reference player data for a given player id
 
@@ -302,7 +361,7 @@ class Players(Resource):
 
         return player_data_dict_clean
 
-class Matches(Resource):
+class Matches(AuthenticatedResource):
     """
     Endpoint to retrieve match meta-data from Football Reference.
 
@@ -371,7 +430,7 @@ class Matches(Resource):
         # return data
         return matches_data_dict_clean
 
-class TeamSeasonStats(Resource):
+class TeamSeasonStats(AuthenticatedResource):
     """
     Endpoint to retrieve season-level team statistical data for a specified league and season.
 
@@ -487,7 +546,7 @@ class TeamMatchStats(Resource):
 
         return team_seasons_stats_dict_clean
 
-class PlayerSeasonStats(Resource):
+class PlayerSeasonStats(AuthenticatedResource):
     """
     Endpoint to retrieve season-level player statistical data for a specified team, league and season.
 
@@ -561,7 +620,7 @@ class PlayerSeasonStats(Resource):
 
         return player_seasons_stats_dict_clean
 
-class PlayerMatchStats(Resource):
+class PlayerMatchStats(AuthenticatedResource):
     """
     Endpoint to retrieve match-level player statistical data for a specified player, league and season.
 
@@ -628,7 +687,7 @@ class PlayerMatchStats(Resource):
 
         return player_match_stats_dict_clean
 
-class AllPlayersMatchStats(Resource):
+class AllPlayersMatchStats(AuthenticatedResource):
     """
     Endpoint to retrieve match-level player statistical data for both teams for a specified match id
 
@@ -675,8 +734,7 @@ class AllPlayersMatchStats(Resource):
         all_players_match_stats_dict_clean = all_players_match_stats_scraper.scrape_clean_stats(match_id)
         return all_players_match_stats_dict_clean
 
-
-
+# Add resources to API
 api.add_resource(Countries, '/countries/')
 api.add_resource(Leagues, '/leagues/')
 api.add_resource(LeagueSeasons, '/league-seasons/')
@@ -691,6 +749,15 @@ api.add_resource(PlayerSeasonStats, '/player-season-stats/')
 api.add_resource(PlayerMatchStats, '/player-match-stats/')
 api.add_resource(AllPlayersMatchStats, '/all-players-match-stats/')
 
+# Create endpoint to generate api keys
+@app.route('/generate_api_key', methods=['POST'])
+def generate_key():
+    new_key = create_api_key()
+    return {'api_key': new_key}, 201
+
+@app.route('/documentation')
+def documentation():
+    return send_from_directory('docs', 'index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)  # Run the Flask application in debug mode

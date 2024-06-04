@@ -1,7 +1,6 @@
 
 import re
 import datetime as dt
-import numpy as np
 from scraper.fbref_scraper import FbrefScraper
 
 class FbrefPlayersScraper(FbrefScraper):
@@ -101,7 +100,7 @@ class FbrefPlayersScraper(FbrefScraper):
         url = f"https://fbref.com/en/players/{player_id}/"
         #  Create dictionary for storing
         player_data_dict = {}
-        # Set non-name variables to np.nan by default
+        # Set non-name variables to None by default
         try:
             soup = self.scrape_data_requests(url)
             player_info = soup.find('div', {'class': 'players', 'id': 'info'})
@@ -420,7 +419,7 @@ class FbrefPlayersScraper(FbrefScraper):
         
             city_raw = splt[:-1]
             if len(city_raw) == 0:
-                city_clean = np.nan
+                city_clean = None
             else:
                 city_clean = str(city_raw[0])
                 city_clean = re.sub(r"['\[\]\",]", "", city_clean)
@@ -429,10 +428,10 @@ class FbrefPlayersScraper(FbrefScraper):
                 city_clean = city_clean.strip()
             # If city_clean and country are equivalent, drop city
             if city_clean == country_clean:
-                city_clean = np.nan
+                city_clean = None
         except:
-            city_clean = np.nan
-            country_clean = np.nan
+            city_clean = None
+            country_clean = None
 
         # Return values
         if return_value == 'all':
@@ -467,14 +466,14 @@ class FbrefPlayersScraper(FbrefScraper):
             ht_raw = re.findall(r"\s*(\d+)cm", htwt_raw)[0]
             ht_clean = float(ht_raw)
         except:
-            ht_clean = np.nan
+            ht_clean = None
         # Clean weight
         
         try:
             wt_raw = re.findall(r"\s*(\d+)kg", htwt_raw)[0]
             wt_clean = float(wt_raw)
         except:
-            wt_clean = np.nan
+            wt_clean = None
         
         # Return values
         if return_value == 'all':

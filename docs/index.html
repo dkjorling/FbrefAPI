@@ -10,9 +10,8 @@
 
 
 
-<meta name="date" content="2024-05-31" />
 
-<title>FBRef API</title>
+<title>FBR API</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -349,22 +348,253 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">FBRef API</h1>
-<h4 class="date">2024-05-31</h4>
+<h1 class="title toc-ignore">FBR API</h1>
 
 </div>
 
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>This document provides the API documentation for the
-<code>FbrefAPI</code>.</p>
+<p>Welcome to the FBR API documentation!</p>
+<p>The FBR API is designed to provide developers, statistics
+enthusiasts, and football (soccer) fans with convenient access to data
+from fbref.com. As a premier source of football statistics, fbref.com
+offers comprehensive information on leagues, teams, and players from
+around the world.</p>
+<p>This documentation can be found simply by going to: <a href="http://fbrapi.com/documentation" class="uri">http://fbrapi.com/documentation</a>.</p>
+<div id="important-note-scraping-restriction" class="section level2">
+<h2>Important Note: Scraping Restriction</h2>
+<p>Before using the FBR API, please be aware that fbref.com imposes a
+scraping restriction that allows users to make only one request every 3
+seconds. This limitation is in place to ensure fair usage of their
+resources and maintain the stability of their website.</p>
+<p>It is crucial to adhere to this scraping restriction to avoid being
+blocked by fbref.com. Failure to comply with this restriction may result
+in temporary or permanent IP bans.</p>
+</div>
+<div id="about-fbr-api" class="section level2">
+<h2>About FBR API</h2>
+<p>The FBR API offers a RESTful interface for accessing a wide range of
+football-related data, including:</p>
+<ul>
+<li>Player statistics</li>
+<li>Team statistics</li>
+<li>League standings</li>
+<li>Match results</li>
+<li>And much more!</li>
+</ul>
+</div>
+<div id="getting-started" class="section level2">
+<h2>Getting Started</h2>
+<p>Ready to explore the world of football statistics? Check out our Base
+URL section to learn how to access the FBR API, and be sure to review
+our Authentication section for information on obtaining an API key.</p>
+<p>Let’s kick things off and start discovering the wealth of football
+data available through FBR API!</p>
+</div>
 <div id="base-url" class="section level2">
 <h2>Base URL</h2>
 <p>The base URL for the API is:</p>
+<p><a href="https://fbrapi.com" class="uri">https://fbrapi.com</a></p>
 </div>
-<div id="endpoints" class="section level2">
-<h2>Endpoints</h2>
+<div id="authentication" class="section level2">
+<h2>Authentication</h2>
+<p>Access to the FBR API endpoints requires authentication using an API
+key. To request an API key, send a POST request to the
+<code>/generate_api_key</code> endpoint. This endpoint will generate a
+unique API key for you to use when making requests to the FBR API.</p>
+<div id="example-using-curl" class="section level3">
+<h3>Example Using cURL</h3>
+<pre class="bash"><code>curl -X POST https://fbrapi.com/generate_api_key</code></pre>
+</div>
+<div id="example-using-python-requests" class="section level3">
+<h3>Example Using python requests:</h3>
+<pre class="python"><code>import requests
+
+response = requests.post(&#39;https://fbrapi.com/generate_api_key&#39;)
+api_key = response.json()[&#39;api_key&#39;]
+print(&quot;API Key:&quot;, api_key)</code></pre>
+</div>
+<div id="example-use-nodejs" class="section level3">
+<h3>Example use nodeJS</h3>
+<pre class="javascript"><code>const fetch = require(&#39;node-fetch&#39;);
+
+(async () =&gt; {
+  try {
+    const response = await fetch(&#39;https://fbrapi.com/generate_api_key&#39;, {
+      method: &#39;POST&#39;
+    });
+    const data = await response.json();
+    const apiKey = data.api_key;
+    console.log(&#39;API Key:&#39;, apiKey);
+  } catch (error) {
+    console.error(&#39;Error:&#39;, error);
+  }
+})();</code></pre>
+</div>
+<div id="example-using-js" class="section level3">
+<h3>Example using JS</h3>
+<pre class="javascript"><code>fetch(&#39;https://fbrapi.com/generate_api_key&#39;, {
+  method: &#39;POST&#39;
+})
+.then(response =&gt; response.json())
+.then(data =&gt; console.log(&quot;API Key:&quot;, data.api_key));</code></pre>
+</div>
+<div id="example-using-r-rvest-package" class="section level3">
+<h3>Example Using R rvest package</h3>
+<pre class="r"><code>library(rvest)
+
+# API Key Post Method
+generate_api_key &lt;- function() {
+  # Perform POST request to generate API key
+  response &lt;- POST(
+    url = &quot;https://fbrapi.com/generate_api_key&quot;,
+    encode = &quot;json&quot;
+  )
+  
+  # Extract API key from response
+  api_key &lt;- content(response, &quot;parsed&quot;)$api_key
+  
+  return(api_key)
+}
+
+# Generate API key
+api_key &lt;- generate_api_key()
+print(api_key)</code></pre>
+</div>
+</div>
+<div id="rate-limiting" class="section level2">
+<h2>Rate Limiting</h2>
+<p>To ensure fair usage of the FBR API and to comply with scraping
+restrictions imposed by fbref.com, users are limited to one request
+every 3 seconds. Please make sure to adhere to this rate limit to avoid
+being blocked.</p>
+</div>
+<div id="usage" class="section level2">
+<h2>Usage</h2>
+<ol style="list-style-type: decimal">
+<li>Direct HTTP Requests: Make HTTP requests to the API endpoints using
+your preferred programming language or tool.</li>
+<li>Command-line Tools: Utilize command-line tools such as cURL or
+HTTPie to interact with the API.</li>
+<li>API Clients: Use pre-built API client libraries available for
+popular programming languages.</li>
+<li>Web Applications: Integrate the FBR API into your web applications
+to fetch football statistics dynamically.</li>
+</ol>
+<p>Below shows an example of how to retrieve data through FBR API’s
+player-match-stats endpoint. This example will return a json object
+containing match-by-match statsitics for Son Heung-min
+(<code>player_id</code> = 92e7e919) in the premier league
+(<code>league_id</code> = 9) during the (<code>season_id</code> =
+2023-2024) season.</p>
+<p><strong>Note</strong>: Make sure to replace ‘YOUR_API_KEY’ with your
+actual api key.</p>
+<div id="example-using-curl-1" class="section level3">
+<h3>Example Using cURL</h3>
+<pre class="bash"><code>curl -X GET &quot;https://fbrapi.com/player-match-stats?player_id=92e7e919&amp;league_id=9&amp;season_id=2023-2024&quot; \
+-H &quot;X-API-Key: YOUR_API_KEY&quot;</code></pre>
+</div>
+<div id="example-using-python-requests-1" class="section level3">
+<h3>Example Using python requests:</h3>
+<pre class="python"><code>import requests
+
+url = &quot;https://fbrapi.com/player-match-stats&quot;
+params = {
+    &quot;player_id&quot;: &quot;92e7e919&quot;,
+    &quot;league_id&quot;: &quot;9&quot;,
+    &quot;season_id&quot;: &quot;2023-2024&quot;
+}
+headers = {&quot;X-API-Key&quot;: &quot;YOUR_API_KEY&quot;}
+
+response = requests.get(url, params=params, headers=headers)
+print(response.json())</code></pre>
+</div>
+<div id="example-use-nodejs-1" class="section level3">
+<h3>Example use nodeJS</h3>
+<pre class="javascript"><code>const axios = require(&#39;axios&#39;);
+
+axios.get(&quot;https://fbrapi.com/player-match-stats&quot;, {
+  params: {
+    player_id: &quot;92e7e919&quot;,
+    league_id: &quot;9&quot;,
+    season_id: &quot;2023-2024&quot;
+  },
+  headers: {
+    &quot;X-API-Key&quot;: &quot;YOUR_API_KEY&quot;
+  }
+})
+.then(response =&gt; console.log(response.data))
+.catch(error =&gt; console.error(error));</code></pre>
+</div>
+<div id="example-using-js-1" class="section level3">
+<h3>Example using JS</h3>
+<pre class="javascript"><code>fetch(&quot;https://fbrapi.com/player-match-stats?player_id=92e7e919&amp;league_id=9&amp;season_id=2023-2024&quot;, {
+  method: &quot;GET&quot;,
+  headers: {
+    &quot;X-API-Key&quot;: &quot;YOUR_API_KEY&quot;
+  }
+})
+.then(response =&gt; response.json())
+.then(data =&gt; console.log(data))
+.catch(error =&gt; console.error(error));</code></pre>
+</div>
+<div id="example-using-r-rvest-package-1" class="section level3">
+<h3>Example Using R rvest package</h3>
+<pre class="r"><code>library(rvest)
+url &lt;- &quot;https://fbrapi.com/player-match-stats&quot;
+params &lt;- list(
+  player_id = &quot;92e7e919&quot;,
+  league_id = &quot;9&quot;,
+  season_id = &quot;2023-2024&quot;
+)
+headers &lt;- list(&quot;X-API-Key&quot; = api_key)
+
+# Perform GET request for player match stats
+response &lt;- GET(url, query = params, add_headers(headers))
+
+# Extract and print response content
+content &lt;- content(response, &quot;parsed&quot;)
+print(content)</code></pre>
+</div>
+</div>
+<div id="supported-endpoints" class="section level2">
+<h2>Supported Endpoints</h2>
+<p>The FBR API supports the following endpoints:</p>
+<ul>
+<li><code>/documentation</code>: Get method to view FBR API
+documentation.</li>
+<li><code>/generate_api_key</code>: POST method to generate a new API
+key.</li>
+<li><code>/countries</code>: GET method to retrieve football-related
+meta-data for all available countries</li>
+<li><code>/leagues</code>: GET method to retrieve meta-data for all
+unique leagues associated with a specified country.</li>
+<li><code>/league-seasons</code>: GET method to retrieve all season ids
+for a specific league id</li>
+<li><code>/league-season-details</code>: GET method to retrieve
+meta-data for a specific league id and season id.</li>
+<li><code>/league-standings</code>: GET method to retrieve all standings
+tables for a given league and season id.</li>
+<li><code>/teams</code>: GET method to retrieve team roster and schedule
+data</li>
+<li><code>/players</code>: GET method to retrieve player meta-data</li>
+<li><code>/matches</code>: GET method to retrieve to retrieve match
+meta-data.</li>
+<li><code>/team-season-stats</code>: GET method to retrieve season-level
+team statistical data for a specified league and season.</li>
+<li><code>/team-match-stats</code>: GET method to retrieve match-level
+team statistical data for a specified team, league and season.</li>
+<li><code>/player-season-stats</code>: GET method to retrieve aggregate
+season stats for all players for a team-league-season</li>
+<li><code>/player-match-stats</code>: GET method to retrieve matchlog
+data for a given player-league-season</li>
+<li><code>/all-players-match-stats</code>: GET method to retrieve match
+stats for all players in a match</li>
+</ul>
+</div>
+<div id="all-endpoints" class="section level2">
+<h2>All Endpoints</h2>
 <div id="countries" class="section level3">
 <h3>Countries</h3>
 <p>Endpoint to retrieve meta-data for all available countries that have
@@ -427,7 +657,7 @@ the country that are covered by Football Reference.</li>
 <div id="leagues" class="section level3">
 <h3>Leagues</h3>
 <p>Endpoint to retrieve meta-data for all unique leagues associated with
-a specified country.Data is retrieved based on a country’s three-letter
+a specified country. Data is retrieved based on a country’s three-letter
 country code used as identification within football reference.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
